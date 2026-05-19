@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Lagerkennzahlen – Übungsseite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f5f1ea;
+    color: #1f1f1f;
+    margin: 0;
+    padding: 24px 16px 48px;
+    line-height: 1.5;
+  }
+  .container { max-width: 920px; margin: 0 auto; }
+  h1 { font-size: 1.75rem; margin: 0 0 4px; font-weight: 600; }
+  .subtitle { color: #555; margin-bottom: 24px; font-size: 0.95rem; }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2dcd0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 4px 0;
+    user-select: none;
+  }
+  details[open] summary { margin-bottom: 12px; }
+  .formula-list {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.92rem;
+    background: #faf7f1;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid #ebe5d8;
+  }
+  .formula-list div { margin: 6px 0; }
+  .formula-list .group-title {
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    color: #6b5d44;
+    font-family: inherit;
+  }
+  .formula-list .group-title:first-child { margin-top: 0; }
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .task-title { font-size: 1.15rem; font-weight: 600; }
+  .task-counter { font-size: 0.85rem; color: #666; }
+  .task-method {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: #6b5d44;
+    background: #faf7f1;
+    border: 1px solid #ebe5d8;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 12px;
+  }
+  .given {
+    background: #faf7f1;
+    border: 1px solid #ebe5d8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .given-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed #e2dcd0;
+  }
+  .given-row:last-child { border-bottom: none; }
+  .given-row .label { color: #444; }
+  .given-row .value { font-weight: 600; }
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .month-cell {
+    background: #fff;
+    border: 1px solid #ebe5d8;
+    border-radius: 4px;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .month-cell .m-name { color: #777; font-size: 0.75rem; display: block; }
+  .month-cell .m-val  { font-weight: 600; }
+  .quarter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .quarter-grid .month-cell { padding: 8px; }
+  table.inputs { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  table.inputs th, table.inputs td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ebe5d8;
+    vertical-align: middle;
+  }
+  table.inputs th {
+    background: #faf7f1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  table.inputs td.label { width: 50%; }
+  table.inputs td.unit { width: 12%; color: #777; font-size: 0.9rem; }
+  table.inputs td.feedback { width: 16%; font-size: 0.85rem; font-weight: 600; }
+  table.inputs input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid #d4cdbf;
+    border-radius: 4px;
+    background: #fff;
+    font-family: inherit;
+  }
+  table.inputs input:focus {
+    outline: none;
+    border-color: #6b5d44;
+    box-shadow: 0 0 0 2px rgba(107, 93, 68, 0.15);
+  }
+  table.inputs input.correct { border-color: #2d6a4f; background: #e8f3ed; }
+  table.inputs input.wrong { border-color: #ad2831; background: #f9e7e8; }
+  td.feedback.correct { color: #2d6a4f; }
+  td.feedback.wrong { color: #ad2831; }
+  .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 9px 16px;
+    border-radius: 5px;
+    border: 1px solid #d4cdbf;
+    background: #fff;
+    color: #1f1f1f;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: #faf7f1; }
+  button.primary {
+    background: #1f1f1f;
+    color: #fff;
+    border-color: #1f1f1f;
+  }
+  button.primary:hover { background: #333; }
+  .solution {
+    background: #fdfbf6;
+    border: 1px solid #d4cdbf;
+    border-left: 4px solid #6b5d44;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.9rem;
+    white-space: pre-line;
+  }
+  .stats {
+    display: flex;
+    gap: 24px;
+    font-size: 0.9rem;
+    color: #444;
+    flex-wrap: wrap;
+  }
+  .stats strong { color: #1f1f1f; }
+  .hidden { display: none; }
+  .task-mode {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+  .task-mode label {
+    background: #faf7f1;
+    border: 1px solid #ebe5d8;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .task-mode input[type="radio"] {
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .task-mode label:has(input:checked) {
+    background: #ebe5d8;
+    border-color: #c2b69e;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Lagerkennzahlen – Übungsseite</h1>
+<div class="subtitle">Berechnen Sie die Lagerkennzahlen. Komma als Dezimaltrennzeichen, kein Tausenderpunkt nötig. Beispiel: 1234,56</div>
+
+<div class="card">
+  <details>
+    <summary>Formelübersicht (zum Aufklappen)</summary>
+    <div class="formula-list">
+      <div class="group-title">Durchschnittlicher Lagerbestand – drei Methoden</div>
+      <div>Einfache Methode: Ø Lagerbestand = (Anfangsbestand + Endbestand) / 2</div>
+      <div>Quartalsmethode: Ø Lagerbestand = (AB + EB Q1 + EB Q2 + EB Q3 + EB Q4) / 5</div>
+      <div>Monatsmethode: Ø Lagerbestand = (AB + EB Jan + EB Feb + ... + EB Dez) / 13</div>
+
+      <div class="group-title">In Euro umrechnen</div>
+      <div>Ø Lagerbestand (€) = Ø Lagerbestand (Stück) × Einkaufspreis</div>
+      <div>Wareneinsatz (€) = Verkaufte Stück × Einkaufspreis</div>
+
+      <div class="group-title">Folgekennzahlen</div>
+      <div>Lagerumschlagshäufigkeit = Wareneinsatz / Ø Lagerbestand</div>
+      <div>Ø Lagerdauer = 360 / Lagerumschlagshäufigkeit</div>
+      <div>Lagerzinssatz = (banküblicher Zinssatz × Ø Lagerdauer) / 360</div>
+      <div>Lagerzinsen = (Ø Lagerbestand × Lagerzinssatz) / 100</div>
+    </div>
+  </details>
+</div>
+
+<div class="card">
+  <div class="task-mode">
+    <span>Aufgabentyp:</span>
+    <label><input type="radio" name="mode" value="simple" checked><span>Einfache Methode</span></label>
+    <label><input type="radio" name="mode" value="quarterly"><span>Quartalsmethode</span></label>
+    <label><input type="radio" name="mode" value="monthly"><span>Monatsmethode</span></label>
+    <label><input type="radio" name="mode" value="mixed"><span>Alle gemischt</span></label>
+    <label><input type="radio" name="mode" value="random"><span>Zufallsaufgaben</span></label>
+  </div>
+
+  <div class="task-header">
+    <div class="task-title" id="task-name">–</div>
+    <div class="task-counter" id="task-counter">Aufgabe 1</div>
+  </div>
+  <div class="task-method" id="task-method">Methode: einfach</div>
+
+  <div class="given" id="given-block"></div>
+
+  <table class="inputs">
+    <thead>
+      <tr><th>Kennzahl</th><th>Ihre Lösung</th><th>Einheit</th><th></th></tr>
+    </thead>
+    <tbody id="input-rows"></tbody>
+  </table>
+
+  <div class="buttons">
+    <button class="primary" id="btn-check">Prüfen</button>
+    <button id="btn-solution">Lösung mit Rechenweg</button>
+    <button id="btn-next">Nächste Aufgabe</button>
+    <button id="btn-reset">Felder leeren</button>
+  </div>
+
+  <div class="solution hidden" id="solution-block"></div>
+</div>
+
+<div class="card">
+  <div class="stats">
+    <span>Aufgaben gerechnet: <strong id="stat-tasks">0</strong></span>
+    <span>Felder richtig: <strong id="stat-correct">0</strong></span>
+    <span>Felder versucht: <strong id="stat-attempts">0</strong></span>
+    <span>Trefferquote: <strong id="stat-rate">–</strong></span>
+  </div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+
+// ----------------------------- Aufgaben: einfache Methode -----------------------------
+const simpleTasks = [
+  { method: "simple", name: "Akku-Schlagschrauber 'PowerDrill 18V'", AB: 30, EB: 50, WE: 400, EK: 95, zins: 6 },
+  { method: "simple", name: "Gartenmöbel-Set 'Provence'",            AB: 15, EB: 45, WE: 180, EK: 420, zins: 6 },
+  { method: "simple", name: "Wandfliesen 'Toscana' 60×60",           AB: 800, EB: 600, WE: 8400, EK: 5, zins: 6 },
+  { method: "simple", name: "Designerwasserhahn 'Aqua Plus'",        AB: 60, EB: 100, WE: 240, EK: 130, zins: 6 },
+  { method: "simple", name: "Werkzeugkoffer 'Heimwerker XL'",        AB: 25, EB: 35, WE: 360, EK: 45, zins: 6 },
+  { method: "simple", name: "Rasenmäher 'Greenline 250'",            AB: 12, EB: 28, WE: 80, EK: 280, zins: 6 },
+  { method: "simple", name: "Holzlasur 'Nussbaum' 5L",               AB: 80, EB: 120, WE: 800, EK: 18, zins: 6 },
+  { method: "simple", name: "Schubkarre 'Profi 100L'",               AB: 20, EB: 40, WE: 150, EK: 60, zins: 6 },
+  { method: "simple", name: "Heckenschere 'Topiari' Akku",           AB: 50, EB: 70, WE: 480, EK: 75, zins: 6 },
+  { method: "simple", name: "Pflanzkübel 'Riviera' 80cm",            AB: 30, EB: 50, WE: 320, EK: 38, zins: 6 }
+];
+
+// ----------------------------- Aufgaben: Quartalsmethode -----------------------------
+const quarterlyTasks = [
+  { method: "quarterly", name: "Akku-Bohrmaschine 'ProDrill'",
+    AB: 40, Q1: 60, Q2: 80, Q3: 50, Q4: 70, WE: 450, EK: 80, zins: 6 },
+  { method: "quarterly", name: "Gartenmöbel-Set 'Mallorca'",
+    AB: 20, Q1: 30, Q2: 80, Q3: 60, Q4: 60, WE: 200, EK: 350, zins: 6 },
+  { method: "quarterly", name: "Wandfarbe 'Reinweiß' 10L",
+    AB: 200, Q1: 250, Q2: 300, Q3: 200, Q4: 250, WE: 5760, EK: 12, zins: 6 },
+  { method: "quarterly", name: "Werkzeugkoffer 'Heimwerker Profi'",
+    AB: 60, Q1: 80, Q2: 70, Q3: 90, Q4: 50, WE: 700, EK: 50, zins: 6 }
+];
+
+// ----------------------------- Aufgaben: Monatsmethode -----------------------------
+const monthlyTasks = [
+  { method: "monthly", name: "Elektroinstallationsmaterial",
+    AB: 100, months: [105,110,115,120,125,120,115,110,105,100,100,105],
+    WE: 1100, EK: 25, zins: 6 },
+  { method: "monthly", name: "Heizgeräte (Saisonware)",
+    AB: 20,  months: [15,10,5,5,10,20,40,60,80,60,40,25],
+    WE: 180, EK: 60, zins: 6 },
+  { method: "monthly", name: "Schrauben-Sortimentsmix V2A",
+    AB: 2000, months: [1800,1900,2200,2100,2000,1900,2100,2100,1900,2000,2000,2000],
+    WE: 48000, EK: 0.50, zins: 6 },
+  { method: "monthly", name: "Bohrkronen-Set 'Diamant'",
+    AB: 30, months: [35,40,45,50,55,50,45,40,35,30,30,35],
+    WE: 400, EK: 35, zins: 6 }
+];
+
+const monthNames = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+
+// ----------------------------- Zufallsaufgaben-Generator -----------------------------
+const productsSimple = [
+  { name: "Bohrmaschine 'Power 1200'",       EK: 110 },
+  { name: "Tapete 'Klassik' 10m-Rolle",      EK: 22 },
+  { name: "Innenfarbe 'Premium' 10L",        EK: 15 },
+  { name: "Werkzeugschrank 'Profi'",         EK: 240 },
+  { name: "Türgriff-Set 'Modern'",           EK: 35 },
+  { name: "Fliesenkleber 25kg",              EK: 18 },
+  { name: "Außenleuchte 'LED Star'",         EK: 85 },
+  { name: "Hochdruckreiniger 'Klar 140'",    EK: 165 },
+  { name: "Bodenfliesen 'Granit' 30×30",     EK: 8 },
+  { name: "Akku-Bohrschrauber 'Profi-Set'",  EK: 80 }
+];
+
+const cleanLUH = [3, 4, 5, 6, 8, 10, 12, 15, 20, 24];
+const cleanOe = [20, 30, 40, 50, 60, 70, 80, 100, 120, 150];
+const cleanSpread = [0, 10, 20, 30, 40, 60];
+
+function generateRandomTask() {
+  const p = productsSimple[Math.floor(Math.random() * productsSimple.length)];
+  const oe = cleanOe[Math.floor(Math.random() * cleanOe.length)];
+  const luh = cleanLUH[Math.floor(Math.random() * cleanLUH.length)];
+  let spread = cleanSpread[Math.floor(Math.random() * cleanSpread.length)];
+  if (spread >= oe * 1.8) spread = Math.floor(oe / 2);
+  const direction = Math.random() > 0.5 ? 1 : -1;
+  let AB = oe - direction * spread / 2;
+  let EB = oe + direction * spread / 2;
+  if (AB < 5) { AB = 5; EB = 2 * oe - AB; }
+  if (EB < 5) { EB = 5; AB = 2 * oe - EB; }
+  const WE = oe * luh;
+  return {
+    method: "simple",
+    name: p.name,
+    AB: Math.round(AB),
+    EB: Math.round(EB),
+    WE: Math.round(WE),
+    EK: p.EK,
+    zins: 6
+  };
+}
+
+// ----------------------------- Berechnung -----------------------------
+function solveTask(t) {
+  let oeStk;
+  if (t.method === "simple") {
+    oeStk = (t.AB + t.EB) / 2;
+  } else if (t.method === "quarterly") {
+    oeStk = (t.AB + t.Q1 + t.Q2 + t.Q3 + t.Q4) / 5;
+  } else if (t.method === "monthly") {
+    const sum12 = t.months.reduce((a,b) => a + b, 0);
+    oeStk = (t.AB + sum12) / 13;
+  }
+  const oeEur = oeStk * t.EK;
+  const weEur = t.WE * t.EK;
+  const luh = weEur / oeEur;
+  const dauer = 360 / luh;
+  const satz = (t.zins * dauer) / 360;
+  const zinsen = (oeEur * satz) / 100;
+  return { oeStk, oeEur, weEur, luh, dauer, satz, zinsen };
+}
+
+// ----------------------------- Anzeige-Helfer -----------------------------
+function fmt(n, decimals = 2) {
+  return n.toLocaleString("de-DE", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+function fmtNum(n) {
+  if (Number.isInteger(n)) return n.toLocaleString("de-DE");
+  return fmt(n, 2);
+}
+function parseDe(s) {
+  if (typeof s !== "string") return NaN;
+  const cleaned = s.replace(/\./g, "").replace(",", ".").replace(/\s/g, "").trim();
+  if (cleaned === "") return NaN;
+  return parseFloat(cleaned);
+}
+
+// ----------------------------- Felddefinition -----------------------------
+const fields = [
+  { key: "oeStk",  label: "Ø Lagerbestand",            unit: "Stück", decimals: 2, tolerance: 0.5 },
+  { key: "oeEur",  label: "Ø Lagerbestand (in €)",     unit: "€",     decimals: 2, tolerance: 0.5 },
+  { key: "weEur",  label: "Wareneinsatz (in €)",       unit: "€",     decimals: 2, tolerance: 0.5 },
+  { key: "luh",    label: "Lagerumschlagshäufigkeit",  unit: "",      decimals: 2, tolerance: 0.05 },
+  { key: "dauer",  label: "Ø Lagerdauer",              unit: "Tage",  decimals: 2, tolerance: 0.5 },
+  { key: "satz",   label: "Lagerzinssatz",             unit: "%",     decimals: 2, tolerance: 0.05 },
+  { key: "zinsen", label: "Lagerzinsen",               unit: "€",     decimals: 2, tolerance: 0.5 }
+];
+
+// ----------------------------- Zustand -----------------------------
+let currentTask = null;
+let currentSolution = null;
+let taskIndex = 0;
+let mode = "simple";
+let mixedOrder = [];
+let mixedPos = 0;
+let stats = { tasksChecked: 0, fieldsCorrect: 0, fieldsAttempted: 0 };
+
+// ----------------------------- Render -----------------------------
+function methodLabel(m) {
+  if (m === "simple") return "Methode: einfach (Anfangs- und Endbestand)";
+  if (m === "quarterly") return "Methode: Quartalsbestände (5 Werte)";
+  if (m === "monthly") return "Methode: Monatsbestände (13 Werte)";
+  return "";
+}
+
+function renderGiven(t) {
+  let html = `<div class="given-row"><span class="label">Warengruppe</span><span class="value">${t.name}</span></div>`;
+  html += `<div class="given-row"><span class="label">Anfangsbestand (01.01.)</span><span class="value">${fmtNum(t.AB)} Stück</span></div>`;
+
+  if (t.method === "simple") {
+    html += `<div class="given-row"><span class="label">Endbestand (31.12.)</span><span class="value">${fmtNum(t.EB)} Stück</span></div>`;
+  } else if (t.method === "quarterly") {
+    html += `<div class="given-row"><span class="label">Quartals-Endbestände</span><span class="value"></span></div>`;
+    html += `<div class="quarter-grid">`;
+    ["Q1","Q2","Q3","Q4"].forEach(q => {
+      html += `<div class="month-cell"><span class="m-name">${q}</span><span class="m-val">${fmtNum(t[q])}</span></div>`;
+    });
+    html += `</div>`;
+  } else if (t.method === "monthly") {
+    html += `<div class="given-row"><span class="label">Monats-Endbestände</span><span class="value"></span></div>`;
+    html += `<div class="month-grid">`;
+    t.months.forEach((m, i) => {
+      html += `<div class="month-cell"><span class="m-name">${monthNames[i]}</span><span class="m-val">${fmtNum(m)}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `<div class="given-row" style="margin-top:8px"><span class="label">Wareneinsatz (verkaufte Menge)</span><span class="value">${fmtNum(t.WE)} Stück</span></div>`;
+  html += `<div class="given-row"><span class="label">Einkaufspreis je Stück</span><span class="value">${fmt(t.EK, 2)} €</span></div>`;
+  html += `<div class="given-row"><span class="label">Banküblicher Zinssatz</span><span class="value">${fmt(t.zins, 0)} %</span></div>`;
+  document.getElementById("given-block").innerHTML = html;
+}
+
+function renderInputRows() {
+  const rows = fields.map(f => `
+    <tr data-field="${f.key}">
+      <td class="label">${f.label}</td>
+      <td><input type="text" inputmode="decimal" autocomplete="off" data-field="${f.key}"></td>
+      <td class="unit">${f.unit}</td>
+      <td class="feedback" data-field="${f.key}"></td>
+    </tr>
+  `).join("");
+  document.getElementById("input-rows").innerHTML = rows;
+}
+
+function loadTask(t) {
+  currentTask = t;
+  currentSolution = solveTask(t);
+  document.getElementById("task-name").textContent = t.name;
+  document.getElementById("task-counter").textContent = "Aufgabe " + (taskIndex + 1);
+  document.getElementById("task-method").textContent = methodLabel(t.method);
+  renderGiven(t);
+  document.querySelectorAll("#input-rows input").forEach(inp => {
+    inp.value = "";
+    inp.classList.remove("correct", "wrong");
+  });
+  document.querySelectorAll("#input-rows td.feedback").forEach(td => {
+    td.textContent = "";
+    td.classList.remove("correct", "wrong");
+  });
+  document.getElementById("solution-block").classList.add("hidden");
+}
+
+function checkAnswers() {
+  let anyAttempt = false;
+  fields.forEach(f => {
+    const inp = document.querySelector(`#input-rows input[data-field="${f.key}"]`);
+    const fb = document.querySelector(`#input-rows td.feedback[data-field="${f.key}"]`);
+    const raw = inp.value;
+    if (raw.trim() === "") {
+      inp.classList.remove("correct", "wrong");
+      fb.textContent = "";
+      fb.classList.remove("correct", "wrong");
+      return;
+    }
+    anyAttempt = true;
+    stats.fieldsAttempted += 1;
+    const userVal = parseDe(raw);
+    const correctVal = currentSolution[f.key];
+    if (!isFinite(userVal)) {
+      inp.classList.remove("correct");
+      inp.classList.add("wrong");
+      fb.textContent = "ungültig";
+      fb.classList.remove("correct");
+      fb.classList.add("wrong");
+      return;
+    }
+    if (Math.abs(userVal - correctVal) <= f.tolerance) {
+      inp.classList.remove("wrong");
+      inp.classList.add("correct");
+      fb.textContent = "richtig";
+      fb.classList.remove("wrong");
+      fb.classList.add("correct");
+      stats.fieldsCorrect += 1;
+    } else {
+      inp.classList.remove("correct");
+      inp.classList.add("wrong");
+      fb.textContent = "falsch";
+      fb.classList.remove("correct");
+      fb.classList.add("wrong");
+    }
+  });
+  if (anyAttempt) {
+    stats.tasksChecked += 1;
+  }
+  updateStats();
+}
+
+function showSolution() {
+  const t = currentTask;
+  const s = currentSolution;
+  let oeLine;
+
+  if (t.method === "simple") {
+    oeLine = `Ø Lagerbestand (Stück) = (${t.AB} + ${t.EB}) / 2 = ${fmtNum(s.oeStk)} Stück`;
+  } else if (t.method === "quarterly") {
+    const sum = t.AB + t.Q1 + t.Q2 + t.Q3 + t.Q4;
+    oeLine = `Ø Lagerbestand (Stück) = (${t.AB} + ${t.Q1} + ${t.Q2} + ${t.Q3} + ${t.Q4}) / 5 = ${fmtNum(sum)} / 5 = ${fmtNum(s.oeStk)} Stück`;
+  } else if (t.method === "monthly") {
+    const sumMonths = t.months.reduce((a,b)=>a+b,0);
+    const totalSum = t.AB + sumMonths;
+    const monthExpr = t.months.join(" + ");
+    oeLine = `Ø Lagerbestand (Stück) = (${t.AB} + ${monthExpr}) / 13\n                       = ${fmtNum(totalSum)} / 13 = ${fmtNum(s.oeStk)} Stück`;
+  }
+
+  const lines = [
+    oeLine,
+    `Ø Lagerbestand (€) = ${fmtNum(s.oeStk)} × ${fmt(t.EK,2)} € = ${fmt(s.oeEur,2)} €`,
+    `Wareneinsatz (€) = ${fmtNum(t.WE)} × ${fmt(t.EK,2)} € = ${fmt(s.weEur,2)} €`,
+    `Lagerumschlagshäufigkeit = ${fmt(s.weEur,2)} € / ${fmt(s.oeEur,2)} € = ${fmt(s.luh,2)}`,
+    `Ø Lagerdauer = 360 / ${fmt(s.luh,2)} = ${fmt(s.dauer,2)} Tage`,
+    `Lagerzinssatz = (${fmt(t.zins,0)} × ${fmt(s.dauer,2)}) / 360 = ${fmt(s.satz,2)} %`,
+    `Lagerzinsen = (${fmt(s.oeEur,2)} × ${fmt(s.satz,2)}) / 100 = ${fmt(s.zinsen,2)} €`
+  ];
+  const block = document.getElementById("solution-block");
+  block.textContent = lines.join("\n");
+  block.classList.remove("hidden");
+}
+
+function buildMixedOrder() {
+  const all = [...simpleTasks, ...quarterlyTasks, ...monthlyTasks];
+  // Fisher-Yates Shuffle
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  mixedOrder = all;
+  mixedPos = 0;
+}
+
+function nextTask() {
+  taskIndex += 1;
+  if (mode === "simple") {
+    loadTask(simpleTasks[taskIndex % simpleTasks.length]);
+  } else if (mode === "quarterly") {
+    loadTask(quarterlyTasks[taskIndex % quarterlyTasks.length]);
+  } else if (mode === "monthly") {
+    loadTask(monthlyTasks[taskIndex % monthlyTasks.length]);
+  } else if (mode === "mixed") {
+    mixedPos += 1;
+    if (mixedPos >= mixedOrder.length) {
+      buildMixedOrder();
+    }
+    loadTask(mixedOrder[mixedPos]);
+  } else if (mode === "random") {
+    loadTask(generateRandomTask());
+  }
+}
+
+function resetInputs() {
+  document.querySelectorAll("#input-rows input").forEach(inp => {
+    inp.value = "";
+    inp.classList.remove("correct", "wrong");
+  });
+  document.querySelectorAll("#input-rows td.feedback").forEach(td => {
+    td.textContent = "";
+    td.classList.remove("correct", "wrong");
+  });
+  document.getElementById("solution-block").classList.add("hidden");
+}
+
+function updateStats() {
+  document.getElementById("stat-tasks").textContent = stats.tasksChecked;
+  document.getElementById("stat-correct").textContent = stats.fieldsCorrect;
+  document.getElementById("stat-attempts").textContent = stats.fieldsAttempted;
+  document.getElementById("stat-rate").textContent =
+    stats.fieldsAttempted === 0
+      ? "–"
+      : Math.round(100 * stats.fieldsCorrect / stats.fieldsAttempted) + " %";
+}
+
+function setMode(newMode) {
+  mode = newMode;
+  taskIndex = 0;
+  if (mode === "simple") {
+    loadTask(simpleTasks[0]);
+  } else if (mode === "quarterly") {
+    loadTask(quarterlyTasks[0]);
+  } else if (mode === "monthly") {
+    loadTask(monthlyTasks[0]);
+  } else if (mode === "mixed") {
+    buildMixedOrder();
+    loadTask(mixedOrder[0]);
+  } else if (mode === "random") {
+    loadTask(generateRandomTask());
+  }
+}
+
+// ----------------------------- Event-Bindings -----------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  renderInputRows();
+  loadTask(simpleTasks[0]);
+
+  document.getElementById("btn-check").addEventListener("click", checkAnswers);
+  document.getElementById("btn-solution").addEventListener("click", showSolution);
+  document.getElementById("btn-next").addEventListener("click", nextTask);
+  document.getElementById("btn-reset").addEventListener("click", resetInputs);
+
+  document.querySelectorAll('input[name="mode"]').forEach(r => {
+    r.addEventListener("change", e => setMode(e.target.value));
+  });
+
+  document.getElementById("input-rows").addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      checkAnswers();
+    }
+  });
+});
+</script>
+</body>
+</html>
